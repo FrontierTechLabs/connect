@@ -151,5 +151,5 @@ app.get('/api/admin/stats', async (req, res) => {
 // ---- Serve static ----
 app.use(express.static('public'));
 
-const PORT = process.env.PORT || 3000;
+console.log("🔍 Starting Connect..."); const PORT = process.env.PORT || 3000; console.log("📡 PORT:", PORT);
 app.listen(PORT, () => console.log(`✅ Connect running on port ${PORT}`));
