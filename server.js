@@ -2,14 +2,29 @@ const express = require('express');
 const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
 const { v4: uuidv4 } = require('uuid');
+const path = require('path');
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static('public'));
 
-const supabaseUrl = 'https://qedktepkjztappjgllpa.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlZGt0ZXBranp0YXBwamdsbHBhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTc4OTY1OSwiZXhwIjoyMDk3MzY1NjU5fQ.PAZr4gelAcS5PJ8wy4QE9bFn6S9XwyW-hE3Pr1EsaTE';
+console.log("🔍 Starting Connect...");
+console.log("📡 PORT:", process.env.PORT || 3000);
+
+const supabaseUrl = process.env.SUPABASE_URL || 'https://qedktepkjztappjgllpa.supabase.co';
+const supabaseKey = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlZGt0ZXBranp0YXBwamdsbHBhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTc4OTY1OSwiZXhwIjoyMDk3MzY1NjU5fQ.PAZr4gelAcS5PJ8wy4QE9bFn6S9XwyW-hE3Pr1EsaTE';
+console.log("🔑 Supabase URL:", supabaseUrl ? "Set" : "Missing");
 const supabase = createClient(supabaseUrl, supabaseKey);
+
+// ---- Healthcheck route ----
+app.get('/api/rooms', async (req, res) => {
+  try {
+    const { data } = await supabase.from('rooms').select('*').limit(1);
+    res.json(data || []);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 
 // ---- API: register ----
 app.post('/api/register', async (req, res) => {
@@ -60,7 +75,7 @@ app.post('/api/recover', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// ---- API: rooms ----
+// ---- API: rooms (list) ----
 app.get('/api/rooms', async (req, res) => {
   try {
     const { data } = await supabase.from('rooms').select('*').order('created_at', { ascending: false });
@@ -68,6 +83,7 @@ app.get('/api/rooms', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+// ---- API: create room ----
 app.post('/api/rooms', async (req, res) => {
   const { name, type, adminDid } = req.body;
   const id = uuidv4();
@@ -78,6 +94,7 @@ app.post('/api/rooms', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+// ---- API: join room ----
 app.post('/api/rooms/join', async (req, res) => {
   const { roomId, did } = req.body;
   try {
@@ -148,9 +165,10 @@ app.get('/api/admin/stats', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// ---- Serve static ----
-app.use(express.static('public'));
+// ---- Fallback route for static frontend ----
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
-console.log("🔍 Starting Connect..."); const PORT = process.env.PORT || 3000; console.log("📡 PORT:", PORT);
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Connect running on port ${PORT}`));
-// trigger deploy
