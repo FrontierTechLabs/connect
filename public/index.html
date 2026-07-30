@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connect</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, sans-serif; background: #060A14; color: #E8F0FE; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 16px; }
+    .container { max-width: 420px; width: 100%; background: #0F172A; border-radius: 28px; padding: 20px; border: 1px solid rgba(229,57,53,0.08); }
+    h1 { color: #E53935; font-size: 26px; text-align: center; }
+    .sub { text-align: center; color: #8A9BB5; font-size: 14px; margin-bottom: 16px; }
+    input { width: 100%; padding: 12px 16px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.06); background: #1A2440; color: #fff; font-size: 14px; margin-bottom: 10px; outline: none; }
+    button { width: 100%; padding: 14px; border-radius: 60px; border: none; background: #E53935; color: #fff; font-weight: 700; font-size: 16px; cursor: pointer; }
+    .hidden { display: none; }
+    .recovery-box { background: #162035; border-radius: 16px; padding: 16px; margin: 12px 0; border: 1px solid #F5B041; word-break: break-word; }
+    .recovery-box .phrase { font-weight: 700; color: #F5B041; font-size: 15px; }
+    .chat-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer; }
+    .chat-item .name { font-weight: 600; }
+    .chat-item .preview { color: #8A9BB5; font-size: 13px; }
+    .chat-item .time { color: #4A5B7A; font-size: 11px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Connect</h1>
+  <p class="sub">Your Identity. Your Conversations.</p>
+
+  <!-- STEP 1 -->
+  <div id="step1">
+    <input type="text" id="usernameInput" placeholder="Enter username...">
+    <button onclick="goToStep2()">Continue →</button>
+  </div>
+
+  <!-- STEP 2 -->
+  <div id="step2" class="hidden">
+    <div class="recovery-box">
+      <div class="phrase" id="recoveryPhrase">Loading...</div>
+      <p style="color:#8A9BB5;font-size:12px;">Save these 12 words.</p>
+    </div>
+    <p style="color:#8A9BB5;font-size:13px;">Type the <strong>3rd</strong> word:</p>
+    <input type="text" id="confirmWord" placeholder="Type 3rd word...">
+    <button onclick="verifyRecovery()">✅ Verify</button>
+    <button onclick="document.getElementById('step2').classList.add('hidden');document.getElementById('step1').classList.remove('hidden');" style="background:transparent;border:1px solid rgba(255,255,255,0.1);margin-top:8px;">← Back</button>
+  </div>
+
+  <!-- MAIN -->
+  <div id="mainApp" class="hidden">
+    <div id="chatList">
+      <div class="chat-item" onclick="openChat('John')"><div><div class="name">John Doe</div><div class="preview">Hey!</div></div><div class="time">2m</div></div>
+      <div class="chat-item" onclick="openChat('Team')"><div><div class="name">Team Alpha</div><div class="preview">Poll results</div></div><div class="time">1h</div></div>
+    </div>
+    <div id="chatView" class="hidden">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <span style="font-size:22px;cursor:pointer;color:#8A9BB5;" onclick="closeChat()">←</span>
+        <span id="chatPartner" style="font-weight:700;font-size:18px;">John</span>
+      </div>
+      <div id="chatMessages" style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto;margin-bottom:12px;">
+        <div style="background:#1A2440;padding:8px 14px;border-radius:16px;align-self:flex-start;max-width:80%;">Hey there!</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="chatInput" placeholder="Type..." style="margin:0;flex:1;">
+        <button onclick="sendMessage()" style="width:auto;padding:10px 18px;">➤</button>
+      </div>
+    </div>
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+      <button onclick="alert('Status')" style="width:auto;padding:8px 16px;background:#1A2440;">📝 Status</button>
+      <button onclick="alert('Rooms')" style="width:auto;padding:8px 16px;background:#1A2440;">🚪 Rooms</button>
+      <button onclick="alert('Profile')" style="width:auto;padding:8px 16px;background:#1A2440;">👤 Profile</button>
+      <button onclick="alert('Admin')" style="width:auto;padding:8px 16px;background:#1A2440;">🛡️ Admin</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let username = '';
+let recoveryPhrase = '';
+const words = ['abandon','ability','able','about','above','absent','absorb','abstract','absurd','abuse','access','accident','account','accuse','achieve','acid','acoustic','acquire','across','act'];
+
+function goToStep2() {
+  const name = document.getElementById('usernameInput').value.trim();
+  if (!name) { alert('Enter a username'); return; }
+  username = name;
+  let phrase = [];
+  for (let i=0;i<12;i++) phrase.push(words[Math.floor(Math.random()*words.length)]);
+  recoveryPhrase = phrase.join(' ');
+  document.getElementById('recoveryPhrase').textContent = recoveryPhrase;
+  document.getElementById('step1').classList.add('hidden');
+  document.getElementById('step2').classList.remove('hidden');
+}
+
+function verifyRecovery() {
+  const word = document.getElementById('confirmWord').value.trim();
+  const third = recoveryPhrase.split(' ')[2];
+  if (word.toLowerCase() === third.toLowerCase()) {
+    alert('✅ Identity created! DID: did:connect:' + Math.random().toString(36).substring(2,10));
+    document.getElementById('step2').classList.add('hidden');
+    document.getElementById('mainApp').classList.remove('hidden');
+    localStorage.setItem('connect_username', username);
+  } else {
+    alert('❌ Incorrect word.');
+  }
+}
+
+function openChat(name) {
+  document.getElementById('chatPartner').textContent = name;
+  document.getElementById('chatView').classList.remove('hidden');
+  document.getElementById('chatList').classList.add('hidden');
+}
+
+function closeChat() {
+  document.getElementById('chatView').classList.add('hidden');
+  document.getElementById('chatList').classList.remove('hidden');
+}
+
+function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  const msgs = document.getElementById('chatMessages');
+  const msg = document.createElement('div');
+  msg.style.cssText = 'background:#E53935;padding:8px 14px;border-radius:16px;align-self:flex-end;max-width:80%;';
+  msg.innerHTML = text + ' <span style="font-size:10px;color:rgba(255,255,255,0.5);">' + new Date().toLocaleTimeString() + '</span>';
+  msgs.appendChild(msg);
+  msgs.scrollTop = msgs.scrollHeight;
+  input.value = '';
+}
+
+if (localStorage.getItem('connect_username')) {
+  document.getElementById('step1').classList.add('hidden');
+  document.getElementById('step2').classList.add('hidden');
+  document.getElementById('mainApp').classList.remove('hidden');
+}
+</script>
+</body>
+</html>
