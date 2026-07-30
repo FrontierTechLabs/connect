@@ -33,7 +33,6 @@ app.post('/api/register', async (req, res) => {
   const did = 'did:connect:' + require('crypto').randomBytes(8).toString('hex');
   const salt = require('crypto').randomBytes(16).toString('hex');
   const hash = require('crypto').createHash('sha256').update(recoveryPhrase + salt).digest('hex');
-
   try {
     const { error } = await supabase.from('users').insert({ did, username, device_fingerprint: deviceFingerprint, created_at: Date.now() });
     if (error) {
@@ -60,22 +59,7 @@ app.post('/api/login', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// ---- API: recover ----
-app.post('/api/recover', async (req, res) => {
-  const { username, recoveryPhrase, deviceFingerprint } = req.body;
-  try {
-    const { data: user, error: userErr } = await supabase.from('users').select('did').eq('username', username).single();
-    if (userErr || !user) return res.status(404).json({ error: 'User not found' });
-    const { data: rec, error: recErr } = await supabase.from('recovery').select('phrase_hash, salt').eq('did', user.did).single();
-    if (recErr || !rec) return res.status(404).json({ error: 'No recovery phrase set' });
-    const hash = require('crypto').createHash('sha256').update(recoveryPhrase + rec.salt).digest('hex');
-    if (hash !== rec.phrase_hash) return res.status(401).json({ error: 'Invalid recovery phrase' });
-    await supabase.from('users').update({ device_fingerprint: deviceFingerprint }).eq('did', user.did);
-    res.json({ success: true, did: user.did });
-  } catch (e) { res.status(500).json({ error: e.message }); }
-});
-
-// ---- API: rooms (list) ----
+// ---- API: rooms ----
 app.get('/api/rooms', async (req, res) => {
   try {
     const { data } = await supabase.from('rooms').select('*').order('created_at', { ascending: false });
@@ -83,7 +67,6 @@ app.get('/api/rooms', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// ---- API: create room ----
 app.post('/api/rooms', async (req, res) => {
   const { name, type, adminDid } = req.body;
   const id = uuidv4();
@@ -94,29 +77,11 @@ app.post('/api/rooms', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// ---- API: join room ----
-app.post('/api/rooms/join', async (req, res) => {
-  const { roomId, did } = req.body;
-  try {
-    await supabase.from('room_members').insert({ room_id: roomId, did, joined_at: Date.now() });
-    res.json({ success: true });
-  } catch (e) { res.status(500).json({ error: e.message }); }
-});
-
 // ---- API: messages ----
 app.get('/api/messages/:roomId', async (req, res) => {
   try {
     const { data } = await supabase.from('messages').select('*').eq('room_id', req.params.roomId).order('timestamp', { ascending: true }).limit(200);
     res.json(data || []);
-  } catch (e) { res.status(500).json({ error: e.message }); }
-});
-
-app.post('/api/messages', async (req, res) => {
-  const { roomId, did, text, imageUrl } = req.body;
-  const id = uuidv4();
-  try {
-    await supabase.from('messages').insert({ id, room_id: roomId, did, text, image_url: imageUrl, timestamp: Date.now() });
-    res.json({ success: true, messageId: id });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -134,14 +99,6 @@ app.get('/api/profile/:did', async (req, res) => {
   try {
     const { data } = await supabase.from('users').select('username, bio, last_seen, status').eq('did', req.params.did).single();
     res.json(data || {});
-  } catch (e) { res.status(500).json({ error: e.message }); }
-});
-
-app.put('/api/profile', async (req, res) => {
-  const { did, bio, status } = req.body;
-  try {
-    await supabase.from('users').update({ bio, status, last_seen: Date.now() }).eq('did', did);
-    res.json({ success: true });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -170,5 +127,6 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// ---- Start the server ----
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Connect running on port ${PORT}`));
