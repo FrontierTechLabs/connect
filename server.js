@@ -153,3 +153,4 @@ app.use(express.static('public'));
 
 console.log("🔍 Starting Connect..."); const PORT = process.env.PORT || 3000; console.log("📡 PORT:", PORT);
 app.listen(PORT, () => console.log(`✅ Connect running on port ${PORT}`));
+// trigger deploy
