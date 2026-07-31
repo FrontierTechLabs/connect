@@ -11,7 +11,7 @@ const wss = new WebSocket.Server({ server });
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
-const db = new sqlite3.Database('/app/data/connect.db');
+const db = new sqlite3.Database('/app/dat/app/connect.db');
 db.run(`CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, recovery_phrase TEXT, display_name TEXT, city TEXT, bio TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`);
 db.run(`CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, room TEXT, username TEXT, text TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)`);
 db.run(`CREATE TABLE IF NOT EXISTS rooms (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, type TEXT DEFAULT 'public', created_by TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`);
