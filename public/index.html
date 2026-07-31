@@ -2,134 +2,84 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Connect</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, sans-serif; background: #060A14; color: #E8F0FE; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 16px; }
-    .container { max-width: 420px; width: 100%; background: #0F172A; border-radius: 28px; padding: 20px; border: 1px solid rgba(229,57,53,0.08); }
-    h1 { color: #E53935; font-size: 26px; text-align: center; }
-    .sub { text-align: center; color: #8A9BB5; font-size: 14px; margin-bottom: 16px; }
-    input { width: 100%; padding: 12px 16px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.06); background: #1A2440; color: #fff; font-size: 14px; margin-bottom: 10px; outline: none; }
-    button { width: 100%; padding: 14px; border-radius: 60px; border: none; background: #E53935; color: #fff; font-weight: 700; font-size: 16px; cursor: pointer; }
-    .hidden { display: none; }
-    .recovery-box { background: #162035; border-radius: 16px; padding: 16px; margin: 12px 0; border: 1px solid #F5B041; word-break: break-word; }
-    .recovery-box .phrase { font-weight: 700; color: #F5B041; font-size: 15px; }
-    .chat-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer; }
-    .chat-item .name { font-weight: 600; }
-    .chat-item .preview { color: #8A9BB5; font-size: 13px; }
-    .chat-item .time { color: #4A5B7A; font-size: 11px; }
-  </style>
+  <style>*{margin:0;padding:0;box-sizing:border-box}body{background:#060A14;font-family:'Inter',-apple-system,sans-serif;color:#E8F0FE;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:12px}.phone{max-width:420px;width:100%;background:#0F172A;border-radius:28px;padding:16px;border:1px solid rgba(229,57,53,0.08)}.header{display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.04);margin-bottom:12px}.header h1{font-size:22px;font-weight:800;color:#E53935}.step{display:none}.step.active{display:block}.step h2{font-size:20px;font-weight:700;margin-bottom:4px}.step p{color:#8A9BB5;font-size:14px;margin-bottom:16px}.step input{width:100%;padding:12px 16px;border-radius:40px;border:1px solid rgba(255,255,255,0.06);background:#1A2440;color:#F0F4FF;font-size:14px;outline:none;margin-bottom:10px}.step button{width:100%;padding:14px;border-radius:60px;border:none;background:#E53935;color:#fff;font-weight:700;font-size:16px;cursor:pointer}.step button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.1);color:#8A9BB5;margin-top:8px}.recovery-box{background:#162035;border-radius:16px;padding:16px;margin:12px 0;border:1px solid #F5B041;word-break:break-word}.recovery-box .phrase{font-weight:700;color:#F5B041;font-size:15px}.app{display:none}.app.active{display:block}.tabs{display:flex;justify-content:space-around;background:#162035;border-radius:40px;padding:4px;margin-bottom:12px}.tabs button{background:none;border:none;color:#8A9BB5;font-weight:600;font-size:13px;padding:8px 12px;border-radius:30px;cursor:pointer;flex:1;text-align:center}.tabs button.active{background:#E53935;color:#fff}.tab-content{display:none}.tab-content.active{display:block}.chat-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer}.chat-item .avatar{width:44px;height:44px;border-radius:50%;background:#1A2440;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#E53935}.chat-item .info{flex:1}.chat-item .info .name{font-weight:600;font-size:15px}.chat-item .info .preview{font-size:13px;color:#8A9BB5}.chat-item .time{font-size:11px;color:#4A5B7A}.msg{padding:8px 14px;border-radius:16px;max-width:80%;font-size:14px}.msg.sent{background:#E53935;align-self:flex-end}.msg.received{background:#1A2440;align-self:flex-start}.msg .time{font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px;display:block}.chat-input{display:flex;gap:8px;margin-top:8px}.chat-input input{flex:1;padding:10px 14px;border-radius:40px;border:1px solid rgba(255,255,255,0.06);background:#1A2440;color:#F0F4FF;outline:none}.chat-input button{padding:10px 18px;border-radius:40px;border:none;background:#E53935;color:#fff;font-weight:700;cursor:pointer}.admin-card{background:#162035;border-radius:12px;padding:12px;margin-bottom:8px}.admin-card .row{display:flex;justify-content:space-between;font-size:14px}.profile-field{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03)}.profile-field .label{color:#8A9BB5;font-size:13px}.profile-field .value{font-size:14px}.footer{text-align:center;font-size:10px;color:#4A5B7A;padding-top:16px;border-top:1px solid rgba(255,255,255,0.03);margin-top:12px}</style>
 </head>
 <body>
-<div class="container">
-  <h1>Connect</h1>
-  <p class="sub">Your Identity. Your Conversations.</p>
-
-  <!-- STEP 1 -->
-  <div id="step1">
-    <input type="text" id="usernameInput" placeholder="Enter username...">
-    <button onclick="goToStep2()">Continue →</button>
-  </div>
-
-  <!-- STEP 2 -->
-  <div id="step2" class="hidden">
-    <div class="recovery-box">
-      <div class="phrase" id="recoveryPhrase">Loading...</div>
-      <p style="color:#8A9BB5;font-size:12px;">Save these 12 words.</p>
-    </div>
-    <p style="color:#8A9BB5;font-size:13px;">Type the <strong>3rd</strong> word:</p>
-    <input type="text" id="confirmWord" placeholder="Type 3rd word...">
-    <button onclick="verifyRecovery()">✅ Verify</button>
-    <button onclick="document.getElementById('step2').classList.add('hidden');document.getElementById('step1').classList.remove('hidden');" style="background:transparent;border:1px solid rgba(255,255,255,0.1);margin-top:8px;">← Back</button>
-  </div>
-
-  <!-- MAIN -->
-  <div id="mainApp" class="hidden">
-    <div id="chatList">
-      <div class="chat-item" onclick="openChat('John')"><div><div class="name">John Doe</div><div class="preview">Hey!</div></div><div class="time">2m</div></div>
-      <div class="chat-item" onclick="openChat('Team')"><div><div class="name">Team Alpha</div><div class="preview">Poll results</div></div><div class="time">1h</div></div>
-    </div>
-    <div id="chatView" class="hidden">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-        <span style="font-size:22px;cursor:pointer;color:#8A9BB5;" onclick="closeChat()">←</span>
-        <span id="chatPartner" style="font-weight:700;font-size:18px;">John</span>
-      </div>
-      <div id="chatMessages" style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto;margin-bottom:12px;">
-        <div style="background:#1A2440;padding:8px 14px;border-radius:16px;align-self:flex-start;max-width:80%;">Hey there!</div>
-      </div>
-      <div style="display:flex;gap:8px;">
-        <input type="text" id="chatInput" placeholder="Type..." style="margin:0;flex:1;">
-        <button onclick="sendMessage()" style="width:auto;padding:10px 18px;">➤</button>
-      </div>
-    </div>
-    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
-      <button onclick="alert('Status')" style="width:auto;padding:8px 16px;background:#1A2440;">📝 Status</button>
-      <button onclick="alert('Rooms')" style="width:auto;padding:8px 16px;background:#1A2440;">🚪 Rooms</button>
-      <button onclick="alert('Profile')" style="width:auto;padding:8px 16px;background:#1A2440;">👤 Profile</button>
-      <button onclick="alert('Admin')" style="width:auto;padding:8px 16px;background:#1A2440;">🛡️ Admin</button>
-    </div>
-  </div>
+<div class="phone">
+<div class="header"><h1>Connect</h1><div class="right"><span onclick="alert('🔍 Search')">🔍</span><span onclick="alert('⚙️ Settings')">⚙️</span></div></div>
+<div id="step1" class="step active"><h2>👤 Choose your identity</h2><p>No phone, no email. Your DID is yours.</p><input type="text" id="usernameInput" placeholder="Enter a unique username..."><button onclick="goToStep2()">Continue →</button><button class="secondary" onclick="enterAnonymous()">👻 Browse anonymously</button></div>
+<div id="step2" class="step"><h2>🔐 Save your recovery phrase</h2><p>You will need these 12 words to recover your identity.</p><div class="recovery-box"><div class="phrase" id="recoveryPhrase">loading...</div></div><p style="font-size:13px;color:#8A9BB5;">Type the <strong>3rd</strong> word:</p><input type="text" id="confirmWord" placeholder="Type the 3rd word..."><button onclick="verifyRecovery()">✅ Verify</button><button class="secondary" onclick="document.getElementById('step2').classList.remove('active');document.getElementById('step1').classList.add('active');">← Back</button></div>
+<div id="mainApp" class="app"><div class="tabs"><button class="active" data-tab="chats">💬 Chats</button><button data-tab="rooms">🚪 Rooms</button><button data-tab="profile">👤 Profile</button><button data-tab="admin">🛡️ Admin</button></div>
+<div id="tab-chats" class="tab-content active"><div class="chat-item" onclick="openChat('John Doe')"><div class="avatar">JD</div><div class="info"><div class="name">John Doe</div><div class="preview">Hey, ready?</div></div><div class="time">2m</div></div><button style="background:#1A2440;color:#8A9BB5;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:40px;width:100%;margin-top:10px;" onclick="alert('New room')">➕ New Chat</button></div>
+<div id="tab-rooms" class="tab-content"><div class="admin-card"><div class="row"><span>🏛️ General</span><span>128 members</span></div></div><button style="background:#1A2440;color:#8A9BB5;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:40px;width:100%;margin-top:8px;" onclick="alert('Create room')">➕ Create Room</button></div>
+<div id="tab-profile" class="tab-content"><div style="text-align:center;padding:10px 0;"><div style="font-size:48px;background:#1A2440;width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto;">👤</div><div style="font-weight:700;font-size:20px;margin-top:4px;" id="profileName">Satyam_Founder</div></div><div class="profile-field"><span class="label">Display Name</span><span class="value">Satyam</span></div><div class="profile-field"><span class="label">City</span><span class="value">Delhi</span></div><button onclick="alert('Manage devices')" style="background:#1A2440;color:#8A9BB5;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:40px;width:100%;margin-top:6px;">📱 Manage Devices</button><button onclick="if(confirm('Logout?')){alert('Logged out');}" style="background:transparent;color:#4A5B7A;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:40px;width:100%;margin-top:4px;">🚪 Logout</button></div>
+<div id="tab-admin" class="tab-content"><h3 style="font-size:16px;font-weight:700;margin-bottom:8px;">🛡️ Admin</h3><div class="admin-card"><div class="row"><span>👥 Users</span><span>47</span></div></div><div class="admin-card"><div class="row"><span>🚪 Rooms</span><span>12</span></div></div><div class="admin-card"><div class="row"><span>🚩 Flagged</span><span>3</span></div></div><button style="background:#1A2440;color:#8A9BB5;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:40px;width:100%;margin-top:6px;" onclick="alert('Export')">📥 Export</button></div>
+<div id="chatView" style="display:none;"><div style="display:flex;align-items:center;gap:12px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.04);margin-bottom:12px;"><span onclick="closeChat()" style="font-size:22px;cursor:pointer;color:#8A9BB5;">←</span><span id="chatPartner" style="font-weight:700;font-size:18px;">John</span></div><div id="chatMessages" style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:12px;"><div class="msg received">Hey there! <span class="time">10:15 AM</span></div></div><div class="chat-input"><input type="text" id="chatInput" placeholder="Type..."><button onclick="sendMessage()">➤</button></div></div></div>
+<div class="footer"><strong style="color:#E53935;">⚡ Sovereign Mesh</strong> · Frontier Tech Labs</div>
 </div>
-
 <script>
-let username = '';
 let recoveryPhrase = '';
 const words = ['abandon','ability','able','about','above','absent','absorb','abstract','absurd','abuse','access','accident','account','accuse','achieve','acid','acoustic','acquire','across','act'];
-
 function goToStep2() {
   const name = document.getElementById('usernameInput').value.trim();
-  if (!name) { alert('Enter a username'); return; }
-  username = name;
-  let phrase = [];
-  for (let i=0;i<12;i++) phrase.push(words[Math.floor(Math.random()*words.length)]);
+  if (!name) { alert('Enter username'); return; }
+  let phrase = []; for(let i=0;i<12;i++) phrase.push(words[Math.floor(Math.random()*words.length)]);
   recoveryPhrase = phrase.join(' ');
   document.getElementById('recoveryPhrase').textContent = recoveryPhrase;
-  document.getElementById('step1').classList.add('hidden');
-  document.getElementById('step2').classList.remove('hidden');
+  document.getElementById('step1').classList.remove('active');
+  document.getElementById('step2').classList.add('active');
 }
-
 function verifyRecovery() {
   const word = document.getElementById('confirmWord').value.trim();
   const third = recoveryPhrase.split(' ')[2];
   if (word.toLowerCase() === third.toLowerCase()) {
     alert('✅ Identity created! DID: did:connect:' + Math.random().toString(36).substring(2,10));
-    document.getElementById('step2').classList.add('hidden');
-    document.getElementById('mainApp').classList.remove('hidden');
-    localStorage.setItem('connect_username', username);
-  } else {
-    alert('❌ Incorrect word.');
-  }
+    document.getElementById('step2').classList.remove('active');
+    document.getElementById('mainApp').classList.add('active');
+    document.getElementById('profileName').textContent = document.getElementById('usernameInput').value.trim();
+  } else { alert('❌ Incorrect word'); }
 }
-
+function enterAnonymous() { alert('👻 Anonymous mode'); document.getElementById('step1').classList.remove('active'); document.getElementById('mainApp').classList.add('active'); }
+document.querySelectorAll('.tabs button').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    const tabId = this.dataset.tab;
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + tabId).classList.add('active');
+    document.getElementById('chatView').style.display = 'none';
+  });
+});
 function openChat(name) {
   document.getElementById('chatPartner').textContent = name;
-  document.getElementById('chatView').classList.remove('hidden');
-  document.getElementById('chatList').classList.add('hidden');
+  document.getElementById('chatView').style.display = 'block';
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
 }
-
 function closeChat() {
-  document.getElementById('chatView').classList.add('hidden');
-  document.getElementById('chatList').classList.remove('hidden');
+  document.getElementById('chatView').style.display = 'none';
+  const activeTab = document.querySelector('.tabs button.active');
+  if (activeTab) document.getElementById('tab-' + activeTab.dataset.tab).classList.add('active');
 }
-
 function sendMessage() {
   const input = document.getElementById('chatInput');
   const text = input.value.trim();
   if (!text) return;
   const msgs = document.getElementById('chatMessages');
   const msg = document.createElement('div');
-  msg.style.cssText = 'background:#E53935;padding:8px 14px;border-radius:16px;align-self:flex-end;max-width:80%;';
-  msg.innerHTML = text + ' <span style="font-size:10px;color:rgba(255,255,255,0.5);">' + new Date().toLocaleTimeString() + '</span>';
+  msg.className = 'msg sent';
+  msg.innerHTML = text + ' <span class="time">' + new Date().toLocaleTimeString() + '</span>';
   msgs.appendChild(msg);
   msgs.scrollTop = msgs.scrollHeight;
   input.value = '';
-}
-
-if (localStorage.getItem('connect_username')) {
-  document.getElementById('step1').classList.add('hidden');
-  document.getElementById('step2').classList.add('hidden');
-  document.getElementById('mainApp').classList.remove('hidden');
+  setTimeout(() => {
+    const reply = document.createElement('div');
+    reply.className = 'msg received';
+    reply.innerHTML = '👍 Got it! <span class="time">' + new Date().toLocaleTimeString() + '</span>';
+    msgs.appendChild(reply);
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 1200);
 }
 </script>
 </body>
