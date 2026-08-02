@@ -152,7 +152,7 @@ app.get('/api/status/following/:username', (req, res) => {
 app.get('/api/messages/:room', (req, res) => {
   const room = req.params.room || 'general';
   db.all('SELECT * FROM messages WHERE room = ? AND flagged = 0 ORDER BY timestamp DESC LIMIT 100',
-    [room], (err, rows) => res.json(rows.reverse()));
+    [room], (err, rows) => { if (err) return res.status(500).json({ error: err.message }); if (!rows) rows = []; res.json(rows.reverse()); });
 });
 
 app.post('/api/messages', (req, res) => {
