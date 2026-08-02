@@ -4,82 +4,578 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Connect</title>
-  <style>*{margin:0;padding:0;box-sizing:border-box}body{background:#060A14;font-family:'Inter',-apple-system,sans-serif;color:#E8F0FE;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:12px}.phone{max-width:420px;width:100%;background:#0F172A;border-radius:28px;padding:16px;border:1px solid rgba(229,57,53,0.08)}.header{display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.04);margin-bottom:12px}.header h1{font-size:22px;font-weight:800;color:#E53935}.step{display:none}.step.active{display:block}.step h2{font-size:20px;font-weight:700;margin-bottom:4px}.step p{color:#8A9BB5;font-size:14px;margin-bottom:16px}.step input{width:100%;padding:12px 16px;border-radius:40px;border:1px solid rgba(255,255,255,0.06);background:#1A2440;color:#F0F4FF;font-size:14px;outline:none;margin-bottom:10px}.step button{width:100%;padding:14px;border-radius:60px;border:none;background:#E53935;color:#fff;font-weight:700;font-size:16px;cursor:pointer}.step button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.1);color:#8A9BB5;margin-top:8px}.recovery-box{background:#162035;border-radius:16px;padding:16px;margin:12px 0;border:1px solid #F5B041;word-break:break-word}.recovery-box .phrase{font-weight:700;color:#F5B041;font-size:15px}.app{display:none}.app.active{display:block}.tabs{display:flex;justify-content:space-around;background:#162035;border-radius:40px;padding:4px;margin-bottom:12px}.tabs button{background:none;border:none;color:#8A9BB5;font-weight:600;font-size:13px;padding:8px 12px;border-radius:30px;cursor:pointer;flex:1;text-align:center}.tabs button.active{background:#E53935;color:#fff}.tab-content{display:none}.tab-content.active{display:block}.chat-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer}.chat-item .avatar{width:44px;height:44px;border-radius:50%;background:#1A2440;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#E53935}.chat-item .info{flex:1}.chat-item .info .name{font-weight:600;font-size:15px}.chat-item .info .preview{font-size:13px;color:#8A9BB5}.chat-item .time{font-size:11px;color:#4A5B7A}.msg{padding:8px 14px;border-radius:16px;max-width:80%;font-size:14px}.msg.sent{background:#E53935;align-self:flex-end}.msg.received{background:#1A2440;align-self:flex-start}.msg .time{font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px;display:block}.chat-input{display:flex;gap:8px;margin-top:8px}.chat-input input{flex:1;padding:10px 14px;border-radius:40px;border:1px solid rgba(255,255,255,0.06);background:#1A2440;color:#F0F4FF;outline:none}.chat-input button{padding:10px 18px;border-radius:40px;border:none;background:#E53935;color:#fff;font-weight:700;cursor:pointer}.admin-card{background:#162035;border-radius:12px;padding:12px;margin-bottom:8px}.admin-card .row{display:flex;justify-content:space-between;font-size:14px}.profile-field{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03)}.profile-field .label{color:#8A9BB5;font-size:13px}.profile-field .value{font-size:14px}.footer{text-align:center;font-size:10px;color:#4A5B7A;padding-top:16px;border-top:1px solid rgba(255,255,255,0.03);margin-top:12px}</style>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#060A14;font-family:'Inter',-apple-system,sans-serif;color:#E8F0FE;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:12px}
+    .phone{max-width:420px;width:100%;background:#0F172A;border-radius:28px;padding:16px;border:1px solid rgba(229,57,53,0.08)}
+    .header{display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.04);margin-bottom:12px}
+    .header h1{font-size:22px;font-weight:800;color:#E53935}
+    .header .right{display:flex;gap:12px;font-size:18px;cursor:pointer;color:#8A9BB5}
+    .step{display:none}
+    .step.active{display:block}
+    .step h2{font-size:20px;font-weight:700;margin-bottom:4px}
+    .step p{color:#8A9BB5;font-size:14px;margin-bottom:16px}
+    .step input{width:100%;padding:12px 16px;border-radius:40px;border:1px solid rgba(255,255,255,0.06);background:#1A2440;color:#F0F4FF;font-size:14px;outline:none;margin-bottom:10px}
+    .step button{width:100%;padding:14px;border-radius:60px;border:none;background:#E53935;color:#fff;font-weight:700;font-size:16px;cursor:pointer}
+    .step button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.1);color:#8A9BB5;margin-top:8px}
+    .recovery-box{background:#162035;border-radius:16px;padding:16px;margin:12px 0;border:1px solid #F5B041;word-break:break-word}
+    .recovery-box .phrase{font-weight:700;color:#F5B041;font-size:15px}
+    .app{display:none}
+    .app.active{display:block}
+    .tabs{display:flex;justify-content:space-around;background:#162035;border-radius:40px;padding:4px;margin-bottom:12px}
+    .tabs button{background:none;border:none;color:#8A9BB5;font-weight:600;font-size:12px;padding:8px 6px;border-radius:30px;cursor:pointer;flex:1;text-align:center;transition:0.2s}
+    .tabs button.active{background:#E53935;color:#fff}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+    .chat-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer}
+    .chat-item .avatar{width:44px;height:44px;border-radius:50%;background:#1A2440;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#E53935}
+    .chat-item .info{flex:1}
+    .chat-item .info .name{font-weight:600;font-size:15px}
+    .chat-item .info .preview{font-size:13px;color:#8A9BB5}
+    .chat-item .time{font-size:11px;color:#4A5B7A}
+    .msg{padding:8px 14px;border-radius:16px;max-width:80%;font-size:14px;line-height:1.4}
+    .msg.sent{background:#E53935;align-self:flex-end}
+    .msg.received{background:#1A2440;align-self:flex-start}
+    .msg .time{font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px;display:block}
+    .chat-input{display:flex;gap:8px;margin-top:8px}
+    .chat-input input{flex:1;padding:10px 14px;border-radius:40px;border:1px solid rgba(255,255,255,0.06);background:#1A2440;color:#F0F4FF;outline:none}
+    .chat-input button{padding:10px 18px;border-radius:40px;border:none;background:#E53935;color:#fff;font-weight:700;cursor:pointer}
+    .admin-card{background:#162035;border-radius:12px;padding:12px;margin-bottom:8px}
+    .admin-card .row{display:flex;justify-content:space-between;font-size:14px}
+    .profile-field{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .profile-field .label{color:#8A9BB5;font-size:13px}
+    .profile-field .value{font-size:14px}
+    .profile-field .edit{color:#E53935;font-size:13px;cursor:pointer}
+    .status-item{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .status-item .avatar{width:36px;height:36px;border-radius:50%;background:#1A2440;display:flex;align-items:center;justify-content:center;font-size:14px;color:#E53935}
+    .status-item .text{font-size:14px}
+    .status-item .text .name{font-weight:600}
+    .status-item .text .time{font-size:11px;color:#4A5B7A}
+    .footer{text-align:center;font-size:10px;color:#4A5B7A;padding-top:12px;border-top:1px solid rgba(255,255,255,0.03);margin-top:12px}
+    .room-item{padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;display:flex;justify-content:space-between}
+    .room-item .name{font-weight:600}
+    .room-item .type{font-size:12px;color:#4A5B7A}
+    .modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:1000}
+    .modal-content{background:#0F172A;padding:24px;border-radius:20px;max-width:90%;width:360px;border:1px solid rgba(255,255,255,0.04)}
+    .modal-content input{margin-bottom:10px}
+    .modal-content button{margin-top:4px}
+    .hidden{display:none !important}
+    .flex{display:flex;gap:8px}
+    .mt-8{margin-top:8px}
+    .call-btn{background:#1A2440;color:#8A9BB5;border:1px solid rgba(255,255,255,0.04);padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer}
+    .call-btn.active{background:#E53935;color:#fff}
+  </style>
 </head>
 <body>
 <div class="phone">
-<div class="header"><h1>Connect</h1><div class="right"><span onclick="alert('🔍 Search')">🔍</span><span onclick="alert('⚙️ Settings')">⚙️</span></div></div>
-<div id="step1" class="step active"><h2>👤 Choose your identity</h2><p>No phone, no email. Your DID is yours.</p><input type="text" id="usernameInput" placeholder="Enter a unique username..."><button onclick="goToStep2()">Continue →</button><button class="secondary" onclick="enterAnonymous()">👻 Browse anonymously</button></div>
+<div class="header"><h1>Connect</h1><div class="right"><span onclick="showSearch()">🔍</span><span onclick="showProfile()">⚙️</span></div></div>
+
+<!-- STEP 1 -->
+<div id="step1" class="step active"><h2>👤 Choose your identity</h2><p>No phone, no email. Your DID is yours.</p><input type="text" id="usernameInput" placeholder="Enter username..." value="satyam_founder"><button onclick="goToStep2()">Continue →</button><button class="secondary" onclick="enterAnonymous()">👻 Browse anonymously</button></div>
+
+<!-- STEP 2 -->
 <div id="step2" class="step"><h2>🔐 Save your recovery phrase</h2><p>You will need these 12 words to recover your identity.</p><div class="recovery-box"><div class="phrase" id="recoveryPhrase">loading...</div></div><p style="font-size:13px;color:#8A9BB5;">Type the <strong>3rd</strong> word:</p><input type="text" id="confirmWord" placeholder="Type the 3rd word..."><button onclick="verifyRecovery()">✅ Verify</button><button class="secondary" onclick="document.getElementById('step2').classList.remove('active');document.getElementById('step1').classList.add('active');">← Back</button></div>
-<div id="mainApp" class="app"><div class="tabs"><button class="active" data-tab="chats">💬 Chats</button><button data-tab="rooms">🚪 Rooms</button><button data-tab="profile">👤 Profile</button><button data-tab="admin">🛡️ Admin</button></div>
-<div id="tab-chats" class="tab-content active"><div class="chat-item" onclick="openChat('John Doe')"><div class="avatar">JD</div><div class="info"><div class="name">John Doe</div><div class="preview">Hey, ready?</div></div><div class="time">2m</div></div><button style="background:#1A2440;color:#8A9BB5;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:40px;width:100%;margin-top:10px;" onclick="alert('New room')">➕ New Chat</button></div>
-<div id="tab-rooms" class="tab-content"><div class="admin-card"><div class="row"><span>🏛️ General</span><span>128 members</span></div></div><button style="background:#1A2440;color:#8A9BB5;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:40px;width:100%;margin-top:8px;" onclick="alert('Create room')">➕ Create Room</button></div>
-<div id="tab-profile" class="tab-content"><div style="text-align:center;padding:10px 0;"><div style="font-size:48px;background:#1A2440;width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto;">👤</div><div style="font-weight:700;font-size:20px;margin-top:4px;" id="profileName">Satyam_Founder</div></div><div class="profile-field"><span class="label">Display Name</span><span class="value">Satyam</span></div><div class="profile-field"><span class="label">City</span><span class="value">Delhi</span></div><button onclick="alert('Manage devices')" style="background:#1A2440;color:#8A9BB5;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:40px;width:100%;margin-top:6px;">📱 Manage Devices</button><button onclick="if(confirm('Logout?')){alert('Logged out');}" style="background:transparent;color:#4A5B7A;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:40px;width:100%;margin-top:4px;">🚪 Logout</button></div>
-<div id="tab-admin" class="tab-content"><h3 style="font-size:16px;font-weight:700;margin-bottom:8px;">🛡️ Admin</h3><div class="admin-card"><div class="row"><span>👥 Users</span><span>47</span></div></div><div class="admin-card"><div class="row"><span>🚪 Rooms</span><span>12</span></div></div><div class="admin-card"><div class="row"><span>🚩 Flagged</span><span>3</span></div></div><button style="background:#1A2440;color:#8A9BB5;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:40px;width:100%;margin-top:6px;" onclick="alert('Export')">📥 Export</button></div>
-<div id="chatView" style="display:none;"><div style="display:flex;align-items:center;gap:12px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.04);margin-bottom:12px;"><span onclick="closeChat()" style="font-size:22px;cursor:pointer;color:#8A9BB5;">←</span><span id="chatPartner" style="font-weight:700;font-size:18px;">John</span></div><div id="chatMessages" style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:12px;"><div class="msg received">Hey there! <span class="time">10:15 AM</span></div></div><div class="chat-input"><input type="text" id="chatInput" placeholder="Type..."><button onclick="sendMessage()">➤</button></div></div></div>
+
+<!-- MAIN APP -->
+<div id="mainApp" class="app">
+<div class="tabs">
+  <button class="active" data-tab="chats">💬 Chats</button>
+  <button data-tab="rooms">🚪 Rooms</button>
+  <button data-tab="status">📝 Status</button>
+  <button data-tab="profile">👤 Profile</button>
+  <button data-tab="admin">🛡️ Admin</button>
+</div>
+
+<!-- CHATS -->
+<div id="tab-chats" class="tab-content active">
+  <div id="chatList">
+    <div class="chat-item" onclick="openChat('general')"><div class="avatar">#</div><div class="info"><div class="name">#general</div><div class="preview">Welcome to Connect</div></div><div class="time">now</div></div>
+  </div>
+  <button style="background:#1A2440;color:#8A9BB5;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:40px;width:100%;margin-top:10px;" onclick="createRoom()">➕ Create Room</button>
+</div>
+
+<!-- ROOMS -->
+<div id="tab-rooms" class="tab-content">
+  <div style="display:flex;gap:8px;margin-bottom:10px;">
+    <input type="text" id="roomSearch" placeholder="Search rooms..." style="flex:1;padding:8px 14px;border-radius:40px;border:1px solid rgba(255,255,255,0.06);background:#1A2440;color:#F0F4FF;font-size:13px;outline:none;">
+    <button onclick="searchRooms()" style="padding:8px 16px;background:#E53935;border:none;border-radius:40px;color:#fff;font-weight:600;cursor:pointer;">Search</button>
+  </div>
+  <div id="roomList"></div>
+  <button style="background:#1A2440;color:#8A9BB5;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:40px;width:100%;margin-top:8px;" onclick="createRoom()">➕ Create Room</button>
+</div>
+
+<!-- STATUS -->
+<div id="tab-status" class="tab-content">
+  <div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.03);">
+    <div class="flex"><span style="font-size:18px;">📝</span> <span style="font-weight:600;">My Status</span></div>
+    <input type="text" id="statusInput" placeholder="What's on your mind?" style="margin-top:8px;padding:8px 14px;border-radius:40px;border:1px solid rgba(255,255,255,0.06);background:#1A2440;color:#F0F4FF;width:100%;outline:none;">
+    <button onclick="postStatus()" style="margin-top:4px;padding:8px;background:#E53935;border:none;border-radius:40px;color:#fff;font-weight:600;cursor:pointer;">Post Status</button>
+  </div>
+  <div id="statusFeed"></div>
+</div>
+
+<!-- PROFILE -->
+<div id="tab-profile" class="tab-content">
+  <div style="text-align:center;padding:10px 0;">
+    <div style="font-size:48px;background:#1A2440;width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto;">👤</div>
+    <div style="font-weight:700;font-size:20px;margin-top:4px;" id="profileName">Satyam_Founder</div>
+    <div style="font-size:12px;color:#8A9BB5;" id="profileStatus">Status: Building a free world</div>
+  </div>
+  <div class="profile-field"><span class="label">Display Name</span><span class="value" id="displayName">Satyam <span class="edit" onclick="editField('displayName')">✏️</span></span></div>
+  <div class="profile-field"><span class="label">City</span><span class="value" id="city">Delhi <span class="edit" onclick="editField('city')">✏️</span></span></div>
+  <div class="profile-field"><span class="label">Bio</span><span class="value" id="bio">Building a free world. <span class="edit" onclick="editField('bio')">✏️</span></span></div>
+  <div class="profile-field"><span class="label">DID</span><span class="value" id="didDisplay">did:connect:xxxx</span></div>
+  <button onclick="manageDevices()" style="background:#1A2440;color:#8A9BB5;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:40px;width:100%;margin-top:6px;">📱 Manage Devices</button>
+  <button onclick="showRecovery()" style="background:#1A2440;color:#8A9BB5;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:40px;width:100%;margin-top:4px;">🔑 Recovery Phrase</button>
+  <button onclick="if(confirm('Logout?')){logout()}" style="background:transparent;color:#4A5B7A;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:40px;width:100%;margin-top:4px;">🚪 Logout</button>
+</div>
+
+<!-- ADMIN -->
+<div id="tab-admin" class="tab-content">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:8px;">🛡️ Admin Dashboard</h3>
+  <div id="adminStats"></div>
+  <h3 style="font-size:14px;font-weight:600;margin:12px 0 4px;">🚩 Flagged Messages</h3>
+  <div id="flaggedList"></div>
+  <button style="background:#1A2440;color:#8A9BB5;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:40px;width:100%;margin-top:6px;" onclick="exportData()">📥 Export Data</button>
+</div>
+
+<!-- CHAT VIEW -->
+<div id="chatView" class="hidden">
+  <div style="display:flex;align-items:center;gap:12px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.04);margin-bottom:12px;">
+    <span onclick="closeChat()" style="font-size:22px;cursor:pointer;color:#8A9BB5;">←</span>
+    <span id="chatPartner" style="font-weight:700;font-size:18px;">general</span>
+    <span style="margin-left:auto;display:flex;gap:8px;">
+      <button class="call-btn" onclick="startCall()">📞 Call</button>
+      <button class="call-btn" onclick="startVideoCall()">📹 Video</button>
+    </span>
+  </div>
+  <div id="chatMessages" style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:12px;padding:4px;"></div>
+  <div style="display:flex;gap:6px;margin-bottom:8px;">
+    <input type="text" id="chatInput" placeholder="Type a message..." style="flex:1;padding:10px 14px;border-radius:40px;border:1px solid rgba(255,255,255,0.06);background:#1A2440;color:#F0F4FF;outline:none;">
+    <button onclick="sendMessage()" style="padding:10px 18px;border-radius:40px;border:none;background:#E53935;color:#fff;font-weight:700;cursor:pointer;">➤</button>
+  </div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;">
+    <button style="background:#1A2440;color:#8A9BB5;border:1px solid rgba(255,255,255,0.04);padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer;" onclick="uploadFile()">📷 Image</button>
+    <button style="background:#1A2440;color:#8A9BB5;border:1px solid rgba(255,255,255,0.04);padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer;" onclick="flagMessage()">🚩 Flag</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="modal hidden" onclick="if(event.target===this) closeModal()">
+  <div class="modal-content" id="modalContent"></div>
+</div>
+
 <div class="footer"><strong style="color:#E53935;">⚡ Sovereign Mesh</strong> · Frontier Tech Labs</div>
 </div>
+
 <script>
+let username = localStorage.getItem('connect_username') || '';
 let recoveryPhrase = '';
+let currentRoom = 'general';
+let ws = null;
 const words = ['abandon','ability','able','about','above','absent','absorb','abstract','absurd','abuse','access','accident','account','accuse','achieve','acid','acoustic','acquire','across','act'];
+
+// ===== STEP 1 → STEP 2 =====
 function goToStep2() {
   const name = document.getElementById('usernameInput').value.trim();
   if (!name) { alert('Enter username'); return; }
-  let phrase = []; for(let i=0;i<12;i++) phrase.push(words[Math.floor(Math.random()*words.length)]);
+  username = name;
+  let phrase = [];
+  for (let i=0;i<12;i++) phrase.push(words[Math.floor(Math.random()*words.length)]);
   recoveryPhrase = phrase.join(' ');
   document.getElementById('recoveryPhrase').textContent = recoveryPhrase;
   document.getElementById('step1').classList.remove('active');
   document.getElementById('step2').classList.add('active');
 }
+
 function verifyRecovery() {
   const word = document.getElementById('confirmWord').value.trim();
   const third = recoveryPhrase.split(' ')[2];
   if (word.toLowerCase() === third.toLowerCase()) {
-    alert('✅ Identity created! DID: did:connect:' + Math.random().toString(36).substring(2,10));
+    const did = 'did:connect:' + Math.random().toString(36).substring(2,10);
+    localStorage.setItem('connect_username', username);
+    localStorage.setItem('connect_did', did);
+    alert('✅ Identity created! DID: ' + did);
     document.getElementById('step2').classList.remove('active');
     document.getElementById('mainApp').classList.add('active');
-    document.getElementById('profileName').textContent = document.getElementById('usernameInput').value.trim();
-  } else { alert('❌ Incorrect word'); }
+    document.getElementById('profileName').textContent = username;
+    document.getElementById('didDisplay').textContent = did;
+    document.getElementById('profileStatus').textContent = 'Status: Just joined!';
+    loadRooms();
+    loadStatuses();
+    loadAdminStats();
+    connectWebSocket();
+  } else {
+    alert('❌ Incorrect word. Try again.');
+  }
 }
-function enterAnonymous() { alert('👻 Anonymous mode'); document.getElementById('step1').classList.remove('active'); document.getElementById('mainApp').classList.add('active'); }
-document.querySelectorAll('.tabs button').forEach(btn => {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
-    this.classList.add('active');
-    const tabId = this.dataset.tab;
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.getElementById('tab-' + tabId).classList.add('active');
-    document.getElementById('chatView').style.display = 'none';
-  });
-});
-function openChat(name) {
-  document.getElementById('chatPartner').textContent = name;
-  document.getElementById('chatView').style.display = 'block';
+
+function enterAnonymous() {
+  alert('👻 Anonymous mode – limited features');
+  document.getElementById('step1').classList.remove('active');
+  document.getElementById('mainApp').classList.add('active');
+  connectWebSocket();
+}
+
+// ===== WEBSOCKET =====
+function connectWebSocket() {
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  ws = new WebSocket(`${protocol}//${window.location.host}/`);
+  ws.onopen = () => {
+    ws.send(JSON.stringify({ type: 'join', room: currentRoom, username: username || 'anonymous' }));
+  };
+  ws.onmessage = (e) => {
+    try {
+      const data = JSON.parse(e.data);
+      if (data.type === 'message') {
+        appendMessage(data.data, data.data.username === username);
+      }
+      if (data.type === 'typing') {
+        // Show typing indicator
+      }
+      if (data.type === 'signal') {
+        // WebRTC signaling – handle P2P call
+        handleSignal(data);
+      }
+      if (data.type === 'users') {
+        // Update online users list
+      }
+    } catch(err) { console.error('WS parse error:', err); }
+  };
+}
+
+// ===== MESSAGES =====
+function openChat(room) {
+  currentRoom = room;
+  document.getElementById('chatPartner').textContent = room;
+  document.getElementById('chatView').classList.remove('hidden');
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  // Load messages
+  fetch(`/api/messages/${room}`)
+    .then(r => r.json())
+    .then(messages => {
+      const container = document.getElementById('chatMessages');
+      container.innerHTML = '';
+      messages.forEach(m => appendMessage(m, m.username === username));
+    })
+    .catch(console.error);
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: 'join', room, username: username || 'anonymous' }));
+  }
 }
+
 function closeChat() {
-  document.getElementById('chatView').style.display = 'none';
+  document.getElementById('chatView').classList.add('hidden');
   const activeTab = document.querySelector('.tabs button.active');
   if (activeTab) document.getElementById('tab-' + activeTab.dataset.tab).classList.add('active');
 }
+
 function sendMessage() {
   const input = document.getElementById('chatInput');
   const text = input.value.trim();
   if (!text) return;
-  const msgs = document.getElementById('chatMessages');
-  const msg = document.createElement('div');
-  msg.className = 'msg sent';
-  msg.innerHTML = text + ' <span class="time">' + new Date().toLocaleTimeString() + '</span>';
-  msgs.appendChild(msg);
-  msgs.scrollTop = msgs.scrollHeight;
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: 'message', room: currentRoom, username: username || 'anonymous', text }));
+  } else {
+    fetch('/api/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ room: currentRoom, username: username || 'anonymous', text })
+    }).then(r => r.json()).then(data => {
+      appendMessage(data, true);
+    }).catch(console.error);
+  }
   input.value = '';
-  setTimeout(() => {
-    const reply = document.createElement('div');
-    reply.className = 'msg received';
-    reply.innerHTML = '👍 Got it! <span class="time">' + new Date().toLocaleTimeString() + '</span>';
-    msgs.appendChild(reply);
-    msgs.scrollTop = msgs.scrollHeight;
-  }, 1200);
+}
+
+function appendMessage(msg, isOwn) {
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg ' + (isOwn ? 'sent' : 'received');
+  div.innerHTML = msg.text + ' <span class="time">' + new Date(msg.timestamp).toLocaleTimeString() + '</span>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+// ===== ROOMS =====
+function loadRooms() {
+  fetch('/api/rooms')
+    .then(r => r.json())
+    .then(rooms => {
+      const list = document.getElementById('roomList');
+      list.innerHTML = rooms.map(r => `
+        <div class="room-item" onclick="openChat('${r.name}')">
+          <span class="name">${r.type === 'private' ? '🔒' : '🏛️'} ${r.name}</span>
+          <span class="type">${r.type}</span>
+        </div>
+      `).join('');
+    })
+    .catch(console.error);
+}
+
+function createRoom() {
+  showModal(`
+    <h3 style="margin-bottom:12px;">Create Room</h3>
+    <input type="text" id="roomNameInput" placeholder="Room name...">
+    <select id="roomTypeInput" style="width:100%;padding:12px;border-radius:40px;border:1px solid rgba(255,255,255,0.06);background:#1A2440;color:#F0F4FF;margin-bottom:10px;">
+      <option value="public">Public</option>
+      <option value="private">Private</option>
+    </select>
+    <button onclick="submitRoom()">Create</button>
+    <button class="secondary" onclick="closeModal()">Cancel</button>
+  `);
+}
+
+function submitRoom() {
+  const name = document.getElementById('roomNameInput').value.trim();
+  const type = document.getElementById('roomTypeInput').value;
+  if (!name) { alert('Enter a room name'); return; }
+  fetch('/api/rooms', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, type, created_by: username || 'anonymous' })
+  })
+    .then(r => r.json())
+    .then(() => { closeModal(); loadRooms(); })
+    .catch(console.error);
+}
+
+function searchRooms() {
+  const q = document.getElementById('roomSearch').value.trim();
+  if (!q) { loadRooms(); return; }
+  fetch('/api/rooms')
+    .then(r => r.json())
+    .then(rooms => {
+      const filtered = rooms.filter(r => r.name.includes(q));
+      const list = document.getElementById('roomList');
+      list.innerHTML = filtered.map(r => `
+        <div class="room-item" onclick="openChat('${r.name}')">
+          <span class="name">${r.type === 'private' ? '🔒' : '🏛️'} ${r.name}</span>
+          <span class="type">${r.type}</span>
+        </div>
+      `).join('');
+    })
+    .catch(console.error);
+}
+
+// ===== STATUS =====
+function postStatus() {
+  const text = document.getElementById('statusInput').value.trim();
+  if (!text) { alert('Enter a status'); return; }
+  fetch('/api/status', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: username || 'anonymous', text })
+  })
+    .then(r => r.json())
+    .then(() => {
+      document.getElementById('statusInput').value = '';
+      loadStatuses();
+    })
+    .catch(console.error);
+}
+
+function loadStatuses() {
+  fetch('/api/status/following/' + (username || 'anonymous'))
+    .then(r => r.json())
+    .then(statuses => {
+      const feed = document.getElementById('statusFeed');
+      feed.innerHTML = statuses.map(s => `
+        <div class="status-item">
+          <div class="avatar">${s.username[0]}</div>
+          <div class="text"><span class="name">${s.username}</span> — ${s.text} <span class="time">${new Date(s.created_at).toLocaleString()}</span></div>
+        </div>
+      `).join('');
+    })
+    .catch(console.error);
+}
+
+// ===== PROFILE =====
+function editField(field) {
+  const current = document.getElementById(field).textContent.trim();
+  const newVal = prompt('Enter new ' + field + ':', current);
+  if (newVal === null) return;
+  const data = { username: username || 'anonymous' };
+  data[field] = newVal;
+  fetch('/api/profile', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+    .then(r => r.json())
+    .then(() => {
+      document.getElementById(field).textContent = newVal;
+      if (field === 'displayName') document.getElementById('profileName').textContent = newVal;
+    })
+    .catch(console.error);
+}
+
+function manageDevices() {
+  alert('📱 Device management: Your DID is linked to this device.\nUse your recovery phrase to add new devices.');
+}
+
+function showRecovery() {
+  alert('🔑 Your recovery phrase is:\n' + recoveryPhrase);
+}
+
+function logout() {
+  localStorage.removeItem('connect_username');
+  localStorage.removeItem('connect_did');
+  location.reload();
+}
+
+// ===== ADMIN =====
+function loadAdminStats() {
+  fetch('/api/admin/stats')
+    .then(r => r.json())
+    .then(stats => {
+      document.getElementById('adminStats').innerHTML = `
+        <div class="admin-card"><div class="row"><span>👥 Users</span><span>${stats.users}</span></div></div>
+        <div class="admin-card"><div class="row"><span>🚪 Rooms</span><span>${stats.rooms}</span></div></div>
+        <div class="admin-card"><div class="row"><span>💬 Messages</span><span>${stats.messages}</span></div></div>
+        <div class="admin-card"><div class="row"><span>🚩 Recent Flags</span><span>${stats.recentFlags}</span></div></div>
+      `;
+    })
+    .catch(console.error);
+  loadFlags();
+}
+
+function loadFlags() {
+  fetch('/api/flags')
+    .then(r => r.json())
+    .then(flags => {
+      const list = document.getElementById('flaggedList');
+      if (!flags || flags.length === 0) {
+        list.innerHTML = '<p style="color:#4A5B7A;font-size:13px;">No flagged messages.</p>';
+        return;
+      }
+      list.innerHTML = flags.map(f => `
+        <div class="admin-card" style="font-size:13px;">
+          <div><strong>${f.message_author}</strong>: ${f.message_text}</div>
+          <div style="color:#8A9BB5;font-size:11px;">Flagged by ${f.flagged_by} - ${f.reason}</div>
+        </div>
+      `).join('');
+    })
+    .catch(console.error);
+}
+
+function exportData() {
+  alert('📥 Export feature: Downloads all messages as JSON.');
+  fetch('/api/messages/general')
+    .then(r => r.json())
+    .then(messages => {
+      const blob = new Blob([JSON.stringify(messages, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'connect-export.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    })
+    .catch(console.error);
+}
+
+// ===== P2P CALLING =====
+function startCall() {
+  alert('📞 P2P Calling: WebRTC call initiated. Signaling via WebSocket.');
+  // Simple implementation – will be expanded
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({
+      type: 'signal',
+      target: 'peer',
+      data: { type: 'offer', sdp: 'offer-sdp' }
+    }));
+  }
+}
+
+function startVideoCall() {
+  alert('📹 Video call: Opening camera...');
+  // Will be expanded with actual WebRTC
+}
+
+function handleSignal(data) {
+  console.log('📩 Signal received:', data);
+  // Will handle WebRTC offer/answer exchange
+}
+
+// ===== MODAL =====
+function showModal(html) {
+  document.getElementById('modalContent').innerHTML = html;
+  document.getElementById('modal').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.add('hidden');
+}
+
+// ===== SEARCH =====
+function showSearch() {
+  const q = prompt('🔍 Search messages:');
+  if (!q) return;
+  fetch(`/api/messages/search?q=${encodeURIComponent(q)}`)
+    .then(r => r.json())
+    .then(results => {
+      alert(`Found ${results.length} messages:\n${results.map(m => m.text).join('\n')}`);
+    })
+    .catch(console.error);
+}
+
+function showProfile() {
+  document.querySelector('.tabs button[data-tab="profile"]').click();
+}
+
+// ===== UPLOAD =====
+function uploadFile() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    fetch('/api/upload', { method: 'POST', body: formData })
+      .then(r => r.json())
+      .then(data => {
+        if (data.url) {
+          // Send image URL as message
+          if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'message', room: currentRoom, username: username || 'anonymous', text: `📷 ${data.url}` }));
+          }
+        }
+      })
+      .catch(console.error);
+  };
+  input.click();
+}
+
+function flagMessage() {
+  const reason = prompt('🚩 Reason for flagging this message?');
+  if (!reason) return;
+  const messageId = prompt('Enter message ID to flag:');
+  if (!messageId) return;
+  fetch('/api/flags', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message_id: parseInt(messageId), flagged_by: username || 'anonymous', reason })
+  })
+    .then(r => r.json())
+    .then(() => alert('✅ Message flagged.'))
+    .catch(console.error);
+}
+
+// ===== INIT =====
+if (localStorage.getItem('connect_username')) {
+  username = localStorage.getItem('connect_username');
+  document.getElementById('step1').classList.add('hidden');
+  document.getElementById('step2').classList.add('hidden');
+  document.getElementById('mainApp').classList.add('active');
+  document.getElementById('profileName').textContent = username;
+  document.getElementById('didDisplay').textContent = localStorage.getItem('connect_did') || 'did:connect:xxxx';
+  loadRooms();
+  loadStatuses();
+  loadAdminStats();
+  connectWebSocket();
 }
 </script>
 </body>
