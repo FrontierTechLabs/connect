@@ -7,7 +7,7 @@ const cors = require('cors');
 const path = require('path');
 const bonjour = require('bonjour')();
 
-console.log("🔍 Starting Connect – Full Edition");
+console.log("🔍 Starting Connect – Fixed Edition");
 
 const app = express();
 const server = http.createServer(app);
@@ -17,14 +17,13 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static('public'));
 
-// ---- SQLite (permanent storage) ----
 const dbPath = process.env.DB_PATH || '/app/data/connect.db';
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) console.error("❌ SQLite error:", err.message);
   else console.log("✅ SQLite connected at", dbPath);
 });
 
-// ---- Create all tables ----
+// ---- Create tables ----
 db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -76,7 +75,6 @@ db.serialize(() => {
   console.log("✅ All tables ready");
 });
 
-// ---- File uploads ----
 const storage = multer.diskStorage({
   destination: './public/uploads/',
   filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
@@ -90,24 +88,33 @@ app.get('/health', (req, res) => res.send('OK'));
 app.post('/api/signup', (req, res) => {
   const { username, recovery_phrase, display_name } = req.body;
   if (!username) return res.status(400).json({ error: 'Username required' });
-  db.run('INSERT INTO users (username, recovery_phrase, display_name) VALUES (?, ?, ?)',
-    [username, recovery_phrase || '', display_name || username],
-    function(err) {
-      if (err) return res.status(400).json({ error: 'Username taken' });
-      res.json({ id: this.lastID, username });
-    });
+
+  // Check if user already exists
+  db.get('SELECT id, username, recovery_phrase FROM users WHERE username = ?', [username], (err, existing) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (existing) {
+      // User exists – return their info (login flow)
+      return res.json({ 
+        success: true, 
+        id: existing.id, 
+        username: existing.username,
+        existing: true
+      });
+    }
+    // New user – create
+    db.run('INSERT INTO users (username, recovery_phrase, display_name) VALUES (?, ?, ?)',
+      [username, recovery_phrase || '', display_name || username],
+      function(err) {
+        if (err) return res.status(400).json({ error: 'Username taken' });
+        res.json({ id: this.lastID, username, existing: false });
+      });
+  });
 });
 
 app.get('/api/users', (req, res) => {
   db.all('SELECT id, username, display_name, city, bio, status FROM users', (err, rows) => {
     res.json(rows || []);
   });
-});
-
-app.get('/api/users/search', (req, res) => {
-  const q = req.query.q || '';
-  db.all('SELECT id, username, display_name FROM users WHERE username LIKE ? OR display_name LIKE ?',
-    [`%${q}%`, `%${q}%`], (err, rows) => res.json(rows || []));
 });
 
 app.get('/api/profile/:username', (req, res) => {
@@ -136,14 +143,7 @@ app.post('/api/status', (req, res) => {
     });
 });
 
-app.get('/api/status/:username', (req, res) => {
-  db.all('SELECT * FROM statuses WHERE username = ? AND expires_at > datetime("now") ORDER BY created_at DESC LIMIT 10',
-    [req.params.username], (err, rows) => res.json(rows || []));
-});
-
 app.get('/api/status/following/:username', (req, res) => {
-  // For MVP, return all recent statuses from users you follow
-  // Simplified: return all statuses from all users
   db.all('SELECT * FROM statuses WHERE expires_at > datetime("now") ORDER BY created_at DESC LIMIT 50',
     (err, rows) => res.json(rows || []));
 });
@@ -190,7 +190,6 @@ app.post('/api/rooms', (req, res) => {
     [name, type || 'public', created_by || 'system'],
     function(err) {
       if (err) return res.status(400).json({ error: 'Room exists' });
-      // Auto-join creator
       db.run('INSERT OR IGNORE INTO room_members (room_id, username) VALUES (?, ?)',
         [this.lastID, created_by || 'system']);
       res.json({ id: this.lastID, name });
@@ -207,11 +206,6 @@ app.post('/api/rooms/join', (req, res) => {
         res.json({ success: true });
       });
   });
-});
-
-app.get('/api/rooms/members/:room_name', (req, res) => {
-  db.all('SELECT username FROM room_members WHERE room_id = (SELECT id FROM rooms WHERE name = ?)',
-    [req.params.room_name], (err, rows) => res.json(rows || []));
 });
 
 // ========== FLAGS ==========
@@ -232,13 +226,6 @@ app.post('/api/flags', (req, res) => {
     });
 });
 
-app.delete('/api/flags/:id', (req, res) => {
-  db.run('DELETE FROM flags WHERE id = ?', [req.params.id], (err) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ success: true });
-  });
-});
-
 // ========== ADMIN ==========
 app.get('/api/admin/stats', (req, res) => {
   db.get('SELECT COUNT(*) as users FROM users', (e1, users) => {
@@ -257,29 +244,17 @@ app.get('/api/admin/stats', (req, res) => {
   });
 });
 
-// ========== P2P SIGNALING ==========
-wss.on('connection', (ws, req) => {
+// ========== WEBSOCKET ==========
+wss.on('connection', (ws) => {
   ws.on('message', (message) => {
     try {
       const data = JSON.parse(message);
-      console.log('📩 WS:', data.type);
-
       if (data.type === 'join') {
         ws.room = data.room || 'general';
         ws.username = data.username || 'anonymous';
         ws.send(JSON.stringify({ type: 'joined', room: ws.room }));
-        // Broadcast list of users in room
-        const users = [];
-        wss.clients.forEach(c => {
-          if (c !== ws && c.readyState === WebSocket.OPEN && c.room === ws.room) {
-            users.push(c.username);
-          }
-        });
-        ws.send(JSON.stringify({ type: 'users', users }));
       }
-
       if (data.type === 'signal') {
-        // WebRTC signaling
         const target = data.target;
         wss.clients.forEach(client => {
           if (client !== ws && client.readyState === WebSocket.OPEN && client.username === target) {
@@ -291,7 +266,6 @@ wss.on('connection', (ws, req) => {
           }
         });
       }
-
       if (data.type === 'typing') {
         wss.clients.forEach(client => {
           if (client !== ws && client.readyState === WebSocket.OPEN && client.room === ws.room) {
@@ -305,11 +279,11 @@ wss.on('connection', (ws, req) => {
   });
 });
 
-// ---- mDNS discovery ----
+// ---- mDNS ----
 bonjour.publish({ name: 'Connect-' + (process.env.HOSTNAME || 'node'), type: 'connect', port: 8080 });
 console.log('📡 mDNS published');
 
-// ---- Static files ----
+// ---- Static ----
 app.use(express.static('public'));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -318,5 +292,4 @@ app.get('*', (req, res) => {
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ Connect server running on port ${PORT}`);
-  console.log(`🔗 Healthcheck: /health`);
 });
