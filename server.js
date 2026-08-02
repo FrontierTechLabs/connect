@@ -5,8 +5,9 @@ const sqlite3 = require('sqlite3').verbose();
 const multer = require('multer');
 const cors = require('cors');
 const path = require('path');
+const bonjour = require('bonjour')();
 
-console.log("🔍 Starting Connect...");
+console.log("🔍 Starting Connect (P2P ready)");
 
 const app = express();
 const server = http.createServer(app);
@@ -16,48 +17,26 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-console.log("📁 Connecting to SQLite...");
-
-// Use the volume path – change if needed
-const dbPath = process.env.DB_PATH || './connect.db';
+// ---- SQLite with volume path ----
+const dbPath = process.env.DB_PATH || '/app/data/connect.db';
 const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error("❌ SQLite error:", err.message);
-  } else {
-    console.log("✅ SQLite connected at", dbPath);
-  }
+  if (err) console.error("❌ SQLite error:", err.message);
+  else console.log("✅ SQLite connected at", dbPath);
 });
 
-db.run(`CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, recovery_phrase TEXT, display_name TEXT, city TEXT, bio TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`, (err) => {
-  if (err) console.error("❌ Users table error:", err.message);
-  else console.log("✅ Users table ready");
-});
+db.run(`CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, recovery_phrase TEXT, display_name TEXT, city TEXT, bio TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`);
+db.run(`CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, room TEXT, username TEXT, text TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)`);
+db.run(`CREATE TABLE IF NOT EXISTS rooms (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, type TEXT DEFAULT 'public', created_by TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`);
+db.run(`CREATE TABLE IF NOT EXISTS flags (id INTEGER PRIMARY KEY AUTOINCREMENT, message_id INTEGER, flagged_by TEXT, reason TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)`);
 
-db.run(`CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, room TEXT, username TEXT, text TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)`, (err) => {
-  if (err) console.error("❌ Messages table error:", err.message);
-  else console.log("✅ Messages table ready");
-});
-
-db.run(`CREATE TABLE IF NOT EXISTS rooms (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, type TEXT DEFAULT 'public', created_by TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`, (err) => {
-  if (err) console.error("❌ Rooms table error:", err.message);
-  else console.log("✅ Rooms table ready");
-});
-
-db.run(`CREATE TABLE IF NOT EXISTS flags (id INTEGER PRIMARY KEY AUTOINCREMENT, message_id INTEGER, flagged_by TEXT, reason TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)`, (err) => {
-  if (err) console.error("❌ Flags table error:", err.message);
-  else console.log("✅ Flags table ready");
-});
-
-console.log("📁 Setting up file uploads...");
+// ---- File uploads ----
 const storage = multer.diskStorage({ destination: './public/uploads/', filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname) });
 const upload = multer({ storage });
 
-// ---- HEALTHCHECK ROUTE (simple, no DB) ----
-app.get('/health', (req, res) => {
-  res.send('OK');
-});
+// ---- Healthcheck ----
+app.get('/health', (req, res) => res.send('OK'));
 
-// ---- API: signup ----
+// ---- API: signup, users, messages, rooms, flags (same as before) ----
 app.post('/api/signup', (req, res) => {
   const { username, recovery_phrase, display_name } = req.body;
   if (!username) return res.status(400).json({ error: 'Username required' });
@@ -66,16 +45,11 @@ app.post('/api/signup', (req, res) => {
     res.json({ id: this.lastID, username });
   });
 });
-
-// ---- API: users ----
 app.get('/api/users', (req, res) => db.all('SELECT id, username, display_name, city, bio FROM users', (err, rows) => res.json(rows)));
-
-// ---- API: messages ----
 app.get('/api/messages/:room', (req, res) => {
   const room = req.params.room || 'general';
   db.all('SELECT * FROM messages WHERE room = ? ORDER BY timestamp DESC LIMIT 50', [room], (err, rows) => res.json(rows.reverse()));
 });
-
 app.post('/api/messages', (req, res) => {
   const { room, username, text } = req.body;
   if (!username || !text) return res.status(400).json({ error: 'Missing fields' });
@@ -86,14 +60,10 @@ app.post('/api/messages', (req, res) => {
     res.json(newMsg);
   });
 });
-
-// ---- API: upload ----
 app.post('/api/upload', upload.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
   res.json({ url: `/uploads/${req.file.filename}` });
 });
-
-// ---- API: rooms ----
 app.get('/api/rooms', (req, res) => db.all('SELECT * FROM rooms ORDER BY created_at DESC', (err, rows) => res.json(rows)));
 app.post('/api/rooms', (req, res) => {
   const { name, type, created_by } = req.body;
@@ -103,8 +73,6 @@ app.post('/api/rooms', (req, res) => {
     res.json({ id: this.lastID, name });
   });
 });
-
-// ---- API: flags ----
 app.get('/api/flags', (req, res) => db.all('SELECT * FROM flags ORDER BY timestamp DESC LIMIT 20', (err, rows) => res.json(rows)));
 app.post('/api/flags', (req, res) => {
   const { message_id, flagged_by, reason } = req.body;
@@ -114,20 +82,41 @@ app.post('/api/flags', (req, res) => {
   });
 });
 
-// ---- WebSocket ----
+// ---- P2P WebSocket signaling (for WebRTC) ----
 wss.on('connection', (ws) => {
   ws.on('message', (message) => {
     try {
       const data = JSON.parse(message);
-      if (data.type === 'join') { ws.room = data.room || 'general'; ws.username = data.username || 'anonymous'; ws.send(JSON.stringify({ type: 'joined', room: ws.room })); }
+      if (data.type === 'join') {
+        ws.room = data.room || 'general';
+        ws.username = data.username || 'anonymous';
+        ws.send(JSON.stringify({ type: 'joined', room: ws.room }));
+      }
+      if (data.type === 'signal') {
+        // Forward WebRTC signaling to the target peer
+        const target = data.target;
+        wss.clients.forEach(client => {
+          if (client !== ws && client.readyState === WebSocket.OPEN && client.username === target) {
+            client.send(JSON.stringify({ type: 'signal', from: ws.username, data: data.data }));
+          }
+        });
+      }
       if (data.type === 'typing') {
-        wss.clients.forEach(client => { if (client !== ws && client.readyState === WebSocket.OPEN && client.room === ws.room) client.send(JSON.stringify({ type: 'typing', username: ws.username })); });
+        wss.clients.forEach(client => {
+          if (client !== ws && client.readyState === WebSocket.OPEN && client.room === ws.room) {
+            client.send(JSON.stringify({ type: 'typing', username: ws.username }));
+          }
+        });
       }
     } catch (e) {}
   });
 });
 
-// ---- Fallback route for static frontend ----
+// ---- mDNS discovery (P2P) ----
+bonjour.publish({ name: 'Connect-' + process.env.HOSTNAME || 'node', type: 'connect', port: 8080 });
+console.log('📡 mDNS published');
+
+// ---- Fallback route ----
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -137,4 +126,3 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ Connect server running on port ${PORT}`);
   console.log(`🔗 Healthcheck: /health`);
 });
-// trigger deploy with volume
