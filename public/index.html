@@ -60,12 +60,20 @@
     .modal-content input{width:100%;padding:10px;border-radius:40px;border:1px solid rgba(255,255,255,0.06);background:#1A2440;color:#F0F4FF;margin-bottom:10px;outline:none}
     .modal-content button{width:100%;padding:12px;border-radius:40px;border:none;background:#E53935;color:#fff;font-weight:700;cursor:pointer;margin-bottom:6px}
     .modal-content button.secondary{background:#1A2440;color:#8A9BB5}
+    .guide-step{background:#162035;border-radius:12px;padding:12px;margin:6px 0;display:flex;gap:12px;align-items:center}
+    .guide-step .num{background:#E53935;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+    .guide-step p{font-size:13px;color:#CCD6F0}
+    .feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+    .feature-card{background:#162035;border-radius:12px;padding:12px;text-align:center;border:1px solid rgba(255,255,255,0.04)}
+    .feature-card .icon{font-size:28px}
+    .feature-card .label{font-size:11px;color:#8A9BB5;margin-top:4px}
   </style>
 </head>
 <body>
 <div class="phone">
 <div class="header"><h1>Connect</h1><div class="right"><span onclick="showSearch()">🔍</span></div></div>
 
+<!-- STEP 1: Signup -->
 <div id="step1" class="step active">
   <h2>👤 Choose your identity</h2>
   <p>No phone, no email. Your DID is yours.</p>
@@ -74,6 +82,7 @@
   <button class="secondary" onclick="enterAnonymous()">👻 Browse anonymously</button>
 </div>
 
+<!-- STEP 2: Recovery -->
 <div id="step2" class="step">
   <h2>🔐 Save your recovery phrase</h2>
   <p>You will need these 12 words to recover your identity.</p>
@@ -84,6 +93,7 @@
   <button class="secondary" onclick="document.getElementById('step2').classList.remove('active');document.getElementById('step1').classList.add('active');">← Back</button>
 </div>
 
+<!-- MAIN APP -->
 <div id="mainApp" class="app">
 <div class="tabs">
   <button class="active" data-tab="chats">💬 Chats</button>
@@ -91,17 +101,19 @@
   <button data-tab="status">📝 Status</button>
   <button data-tab="profile">👤 Profile</button>
   <button data-tab="admin">🛡️ Admin</button>
+  <button data-tab="guide">📖 Guide</button>
 </div>
 
+<!-- CHATS -->
 <div id="tab-chats" class="tab-content active">
-  <div id="chatList">
-    <div class="chat-item" onclick="openChat('general')"><div class="avatar">#</div><div class="info"><div class="name">#general</div><div class="preview">Welcome to Connect</div></div><div class="time">now</div></div>
-  </div>
+  <div id="chatList"></div>
   <button style="background:#1A2440;color:#8A9BB5;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:40px;width:100%;margin-top:10px;" onclick="createRoom()">➕ Create Room</button>
 </div>
 
+<!-- ROOMS -->
 <div id="tab-rooms" class="tab-content"><div id="roomList"></div><button style="background:#1A2440;color:#8A9BB5;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:40px;width:100%;margin-top:8px;" onclick="createRoom()">➕ Create Room</button></div>
 
+<!-- STATUS -->
 <div id="tab-status" class="tab-content">
   <div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.03);">
     <div class="flex"><span style="font-size:18px;">📝</span> <span style="font-weight:600;">My Status</span></div>
@@ -111,6 +123,7 @@
   <div id="statusFeed"></div>
 </div>
 
+<!-- PROFILE -->
 <div id="tab-profile" class="tab-content">
   <div style="text-align:center;padding:10px 0;">
     <div style="font-size:48px;background:#1A2440;width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto;">👤</div>
@@ -124,6 +137,7 @@
   <button onclick="if(confirm('Logout?')){logout()}" style="background:transparent;color:#4A5B7A;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:40px;width:100%;margin-top:4px;">🚪 Logout</button>
 </div>
 
+<!-- ADMIN -->
 <div id="tab-admin" class="tab-content">
   <h3 style="font-size:16px;font-weight:700;margin-bottom:8px;">🛡️ Admin</h3>
   <div id="adminStats"></div>
@@ -131,6 +145,29 @@
   <div id="flaggedList"></div>
 </div>
 
+<!-- GUIDE -->
+<div id="tab-guide" class="tab-content">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:8px;">📖 How to Use Connect</h3>
+  <div class="guide-step"><div class="num">1</div><p><strong>Create your identity</strong> – Enter a username and save your recovery phrase.</p></div>
+  <div class="guide-step"><div class="num">2</div><p><strong>Start chatting</strong> – Open any room, type a message, and hit send.</p></div>
+  <div class="guide-step"><div class="num">3</div><p><strong>Create rooms</strong> – Public or private rooms for group conversations.</p></div>
+  <div class="guide-step"><div class="num">4</div><p><strong>Post status</strong> – Share what's on your mind with your network.</p></div>
+  <div class="guide-step"><div class="num">5</div><p><strong>Flag messages</strong> – Report inappropriate content to admins.</p></div>
+  <div class="guide-step"><div class="num">6</div><p><strong>Search messages</strong> – Find any message by keyword.</p></div>
+  <div style="margin-top:12px;padding:12px;background:#162035;border-radius:12px;border-left:3px solid #F5B041;">
+    <p style="font-size:13px;color:#CCD6F0;"><strong>💡 Tip:</strong> Your DID is your identity. Keep your recovery phrase safe – you'll need it to recover your account.</p>
+  </div>
+  <div class="feature-grid">
+    <div class="feature-card"><div class="icon">📝</div><div class="label">Text Messages</div></div>
+    <div class="feature-card"><div class="icon">📷</div><div class="label">Image Sharing</div></div>
+    <div class="feature-card"><div class="icon">🎤</div><div class="label">Voice Notes</div></div>
+    <div class="feature-card"><div class="icon">🔒</div><div class="label">Private Rooms</div></div>
+    <div class="feature-card"><div class="icon">📡</div><div class="label">P2P Calling</div></div>
+    <div class="feature-card"><div class="icon">♾️</div><div class="label">Permanent Storage</div></div>
+  </div>
+</div>
+
+<!-- CHAT VIEW -->
 <div id="chatView" class="hidden">
   <div style="display:flex;align-items:center;gap:12px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.04);margin-bottom:12px;">
     <span onclick="closeChat()" style="font-size:22px;cursor:pointer;color:#8A9BB5;">←</span>
@@ -144,6 +181,10 @@
     <input type="text" id="chatInput" placeholder="Type a message..." style="flex:1;padding:10px 14px;border-radius:40px;border:1px solid rgba(255,255,255,0.06);background:#1A2440;color:#F0F4FF;outline:none;">
     <button onclick="sendMessage()" style="padding:10px 18px;border-radius:40px;border:none;background:#E53935;color:#fff;font-weight:700;cursor:pointer;">➤</button>
   </div>
+  <div style="display:flex;gap:6px;margin-top:6px;">
+    <button onclick="uploadFile()" style="background:#1A2440;color:#8A9BB5;border:1px solid rgba(255,255,255,0.04);padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer;">📷 Image</button>
+    <button onclick="flagMessage()" style="background:#1A2440;color:#8A9BB5;border:1px solid rgba(255,255,255,0.04);padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer;">🚩 Flag</button>
+  </div>
 </div>
 
 <div class="footer"><strong style="color:#E53935;">⚡ Sovereign Mesh</strong> · Frontier Tech Labs</div>
@@ -156,6 +197,7 @@ let currentRoom = 'general';
 let ws = null;
 const words = ['abandon','ability','able','about','above','absent','absorb','abstract','absurd','abuse','access','accident','account','accuse','achieve','acid','acoustic','acquire','across','act'];
 
+// ===== STEP 1 → STEP 2 =====
 function goToStep2() {
   const name = document.getElementById('usernameInput').value.trim();
   if (!name) { alert('Enter username'); return; }
@@ -171,40 +213,42 @@ function goToStep2() {
 function verifyRecovery() {
   const word = document.getElementById('confirmWord').value.trim();
   const third = recoveryPhrase.split(' ')[2];
-  if (word.toLowerCase() === third.toLowerCase()) {
-    const did = 'did:connect:' + Math.random().toString(36).substring(2,10);
-    fetch('/api/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, recovery_phrase: recoveryPhrase, display_name: username })
-    })
-    .then(r => r.json())
-    .then(data => {
-      localStorage.setItem('connect_username', username);
-      localStorage.setItem('connect_did', did);
-      alert('✅ Identity ready! DID: ' + did);
-      document.getElementById('step2').classList.remove('active');
-      document.getElementById('mainApp').classList.add('active');
-      document.getElementById('profileName').textContent = username;
-      loadRooms();
-      loadStatuses();
-      loadAdminStats();
-      loadFlags();
-      connectWebSocket();
-    })
-    .catch(console.error);
-  } else {
+  if (word.toLowerCase() !== third.toLowerCase()) {
     alert('❌ Incorrect word. Try again.');
+    return;
   }
+  const did = 'did:connect:' + Math.random().toString(36).substring(2,10);
+  fetch('/api/signup', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, recovery_phrase: recoveryPhrase, display_name: username })
+  })
+  .then(r => r.json())
+  .then(data => {
+    localStorage.setItem('connect_username', username);
+    localStorage.setItem('connect_did', did);
+    alert('✅ Identity ready! DID: ' + did);
+    document.getElementById('step2').classList.remove('active');
+    document.getElementById('mainApp').classList.add('active');
+    document.getElementById('profileName').textContent = username;
+    loadChatList();
+    loadRooms();
+    loadStatuses();
+    loadAdminStats();
+    loadFlags();
+    connectWebSocket();
+  })
+  .catch(err => { alert('Signup error: ' + err.message); });
 }
 
 function enterAnonymous() {
-  alert('👻 Anonymous mode');
+  alert('👻 Anonymous mode – limited features');
   document.getElementById('step1').classList.remove('active');
   document.getElementById('mainApp').classList.add('active');
   connectWebSocket();
 }
 
+// ===== WEBSOCKET =====
 function connectWebSocket() {
   const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
   ws = new WebSocket(`${protocol}//${window.location.host}/`);
@@ -216,9 +260,34 @@ function connectWebSocket() {
       const data = JSON.parse(e.data);
       if (data.type === 'message') {
         appendMessage(data.data, data.data.username === username);
+        loadChatList();
+      }
+      if (data.type === 'joined') {
+        console.log('Joined room:', data.room);
       }
     } catch(err) {}
   };
+}
+
+// ===== CHATS =====
+function loadChatList() {
+  fetch('/api/rooms')
+    .then(r => r.json())
+    .then(rooms => {
+      const list = document.getElementById('chatList');
+      if (!rooms || rooms.length === 0) {
+        list.innerHTML = '<p style="color:#4A5B7A;font-size:13px;text-align:center;padding:20px 0;">No rooms yet. Create one!</p>';
+        return;
+      }
+      list.innerHTML = rooms.map(r => `
+        <div class="chat-item" onclick="openChat('${r.name}')">
+          <div class="avatar">${r.type === 'private' ? '🔒' : '#'}</div>
+          <div class="info"><div class="name">${r.type === 'private' ? '🔒 ' : ''}${r.name}</div><div class="preview">${r.type} room</div></div>
+          <div class="time">${new Date(r.created_at).toLocaleTimeString()}</div>
+        </div>
+      `).join('');
+    })
+    .catch(console.error);
 }
 
 function openChat(room) {
@@ -231,6 +300,10 @@ function openChat(room) {
     .then(messages => {
       const container = document.getElementById('chatMessages');
       container.innerHTML = '';
+      if (!messages || messages.length === 0) {
+        container.innerHTML = '<p style="color:#4A5B7A;font-size:13px;text-align:center;padding:20px 0;">No messages yet. Say hello!</p>';
+        return;
+      }
       messages.forEach(m => appendMessage(m, m.username === username));
     });
   if (ws && ws.readyState === WebSocket.OPEN) {
@@ -242,6 +315,7 @@ function closeChat() {
   document.getElementById('chatView').classList.add('hidden');
   const activeTab = document.querySelector('.tabs button.active');
   if (activeTab) document.getElementById('tab-' + activeTab.dataset.tab).classList.add('active');
+  loadChatList();
 }
 
 function sendMessage() {
@@ -256,8 +330,10 @@ function sendMessage() {
   .then(r => r.json())
   .then(data => {
     appendMessage(data, true);
-  });
-  input.value = '';
+    input.value = '';
+    loadChatList();
+  })
+  .catch(console.error);
 }
 
 function appendMessage(msg, isOwn) {
@@ -269,37 +345,48 @@ function appendMessage(msg, isOwn) {
   container.scrollTop = container.scrollHeight;
 }
 
+// ===== ROOMS =====
 function loadRooms() {
   fetch('/api/rooms')
     .then(r => r.json())
     .then(rooms => {
       const list = document.getElementById('roomList');
+      if (!rooms || rooms.length === 0) {
+        list.innerHTML = '<p style="color:#4A5B7A;font-size:13px;text-align:center;padding:20px 0;">No rooms yet. Create one!</p>';
+        return;
+      }
       list.innerHTML = rooms.map(r => `
         <div class="room-item" onclick="openChat('${r.name}')">
           <span class="name">${r.type === 'private' ? '🔒' : '🏛️'} ${r.name}</span>
-          <span class="type">${r.type}</span>
+          <span class="type">${r.type} · ${new Date(r.created_at).toLocaleDateString()}</span>
         </div>
       `).join('');
-    });
+    })
+    .catch(console.error);
 }
 
 function createRoom() {
   const name = prompt('Enter room name:');
   if (!name) return;
-  const type = confirm('Private room?') ? 'private' : 'public';
+  const type = confirm('Make this room private?') ? 'private' : 'public';
   fetch('/api/rooms', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, type, created_by: username || 'anonymous' })
   })
   .then(r => r.json())
-  .then(() => { loadRooms(); })
-  .catch(console.error);
+  .then(() => {
+    loadRooms();
+    loadChatList();
+    alert('✅ Room "' + name + '" created!');
+  })
+  .catch(err => { alert('Error creating room: ' + err.message); });
 }
 
+// ===== STATUS =====
 function postStatus() {
   const text = document.getElementById('statusInput').value.trim();
-  if (!text) return;
+  if (!text) { alert('Enter a status message'); return; }
   fetch('/api/status', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -308,7 +395,8 @@ function postStatus() {
   .then(() => {
     document.getElementById('statusInput').value = '';
     loadStatuses();
-  });
+  })
+  .catch(console.error);
 }
 
 function loadStatuses() {
@@ -316,19 +404,25 @@ function loadStatuses() {
     .then(r => r.json())
     .then(statuses => {
       const feed = document.getElementById('statusFeed');
+      if (!statuses || statuses.length === 0) {
+        feed.innerHTML = '<p style="color:#4A5B7A;font-size:13px;text-align:center;padding:20px 0;">No status updates yet.</p>';
+        return;
+      }
       feed.innerHTML = statuses.map(s => `
         <div class="status-item">
-          <div class="avatar">${s.username[0]}</div>
+          <div class="avatar">${s.username ? s.username[0].toUpperCase() : '?'}</div>
           <div class="text"><span class="name">${s.username}</span> — ${s.text} <span class="time">${new Date(s.created_at).toLocaleString()}</span></div>
         </div>
       `).join('');
-    });
+    })
+    .catch(console.error);
 }
 
+// ===== PROFILE =====
 function editField(field) {
   const current = document.getElementById(field).textContent.trim();
-  const newVal = prompt('Enter new ' + field + ':', current);
-  if (!newVal) return;
+  const newVal = prompt('Enter new ' + field + ':', current === '-' ? '' : current);
+  if (newVal === null) return;
   const data = { username: username || 'anonymous' };
   data[field] = newVal;
   fetch('/api/profile', {
@@ -337,13 +431,14 @@ function editField(field) {
     body: JSON.stringify(data)
   })
   .then(() => {
-    document.getElementById(field).textContent = newVal;
-    if (field === 'displayName') document.getElementById('profileName').textContent = newVal;
-  });
+    document.getElementById(field).textContent = newVal || '-';
+    if (field === 'displayName') document.getElementById('profileName').textContent = newVal || username;
+  })
+  .catch(console.error);
 }
 
 function showRecovery() {
-  alert('🔑 Your recovery phrase:\n' + recoveryPhrase);
+  alert('🔑 Your recovery phrase:\n' + (recoveryPhrase || 'Not set yet.'));
 }
 
 function logout() {
@@ -352,17 +447,19 @@ function logout() {
   location.reload();
 }
 
+// ===== ADMIN =====
 function loadAdminStats() {
   fetch('/api/admin/stats')
     .then(r => r.json())
     .then(stats => {
       document.getElementById('adminStats').innerHTML = `
-        <div class="admin-card"><div class="row"><span>👥 Users</span><span>${stats.users}</span></div></div>
-        <div class="admin-card"><div class="row"><span>🚪 Rooms</span><span>${stats.rooms}</span></div></div>
-        <div class="admin-card"><div class="row"><span>💬 Messages</span><span>${stats.messages}</span></div></div>
-        <div class="admin-card"><div class="row"><span>🚩 Recent Flags</span><span>${stats.recentFlags}</span></div></div>
+        <div class="admin-card"><div class="row"><span>👥 Users</span><span>${stats.users || 0}</span></div></div>
+        <div class="admin-card"><div class="row"><span>🚪 Rooms</span><span>${stats.rooms || 0}</span></div></div>
+        <div class="admin-card"><div class="row"><span>💬 Messages</span><span>${stats.messages || 0}</span></div></div>
+        <div class="admin-card"><div class="row"><span>🚩 Recent Flags</span><span>${stats.recentFlags || 0}</span></div></div>
       `;
-    });
+    })
+    .catch(console.error);
 }
 
 function loadFlags() {
@@ -371,39 +468,92 @@ function loadFlags() {
     .then(flags => {
       const list = document.getElementById('flaggedList');
       if (!flags || flags.length === 0) {
-        list.innerHTML = '<p style="color:#4A5B7A;font-size:13px;">No flagged messages.</p>';
+        list.innerHTML = '<p style="color:#4A5B7A;font-size:13px;text-align:center;padding:20px 0;">No flagged messages.</p>';
         return;
       }
       list.innerHTML = flags.map(f => `
         <div class="admin-card" style="font-size:13px;">
-          <div><strong>${f.message_author}</strong>: ${f.message_text}</div>
-          <div style="color:#8A9BB5;font-size:11px;">Flagged by ${f.flagged_by} - ${f.reason}</div>
+          <div><strong>${f.message_author || 'Unknown'}</strong>: ${f.message_text || 'No text'}</div>
+          <div style="color:#8A9BB5;font-size:11px;">Flagged by ${f.flagged_by} - ${f.reason || 'No reason'}</div>
         </div>
       `).join('');
-    });
+    })
+    .catch(console.error);
 }
 
+// ===== SEARCH =====
 function showSearch() {
   const q = prompt('🔍 Search messages:');
   if (!q) return;
   fetch(`/api/messages/search?q=${encodeURIComponent(q)}`)
     .then(r => r.json())
     .then(results => {
-      alert(`Found ${results.length} messages:\n${results.map(m => m.text).join('\n')}`);
-    });
+      if (!results || results.length === 0) {
+        alert('No messages found matching "' + q + '"');
+        return;
+      }
+      alert('Found ' + results.length + ' messages:\n' + results.map(m => '• ' + m.text).join('\n'));
+    })
+    .catch(console.error);
+}
+
+// ===== UPLOAD =====
+function uploadFile() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    fetch('/api/upload', { method: 'POST', body: formData })
+      .then(r => r.json())
+      .then(data => {
+        if (data.url) {
+          fetch('/api/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ room: currentRoom, username: username || 'anonymous', text: '📷 Image: ' + data.url })
+          })
+          .then(r => r.json())
+          .then(() => {
+            loadChatList();
+            openChat(currentRoom);
+          });
+        }
+      })
+      .catch(console.error);
+  };
+  input.click();
+}
+
+function flagMessage() {
+  const messageId = prompt('Enter message ID to flag (from chat):');
+  if (!messageId) return;
+  const reason = prompt('Reason for flagging:');
+  if (!reason) return;
+  fetch('/api/flags', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message_id: parseInt(messageId), flagged_by: username || 'anonymous', reason })
+  })
+  .then(() => alert('✅ Message flagged.'))
+  .catch(console.error);
 }
 
 function startCall() {
   alert('📞 P2P Calling: WebRTC coming soon.');
 }
 
-// Init
+// ===== INIT =====
 if (localStorage.getItem('connect_username')) {
   username = localStorage.getItem('connect_username');
   document.getElementById('step1').classList.add('hidden');
   document.getElementById('step2').classList.add('hidden');
   document.getElementById('mainApp').classList.add('active');
   document.getElementById('profileName').textContent = username;
+  loadChatList();
   loadRooms();
   loadStatuses();
   loadAdminStats();
